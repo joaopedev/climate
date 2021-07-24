@@ -2,19 +2,38 @@ document.querySelector(`.busca`).addEventListener(`submit`, async (event)=>{
 event.preventDefault();
 
 let input = document.querySelector(`#searchInput`).value;
-console.log(input);
 
 if(input !== ``){
-    showWarning(`Carregando...`);
-    let url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURI(input)}&appid=061285ff505e47615f2ae601de75fce1&units=metric&lang=pt_br
-    `;
+    showWarning(`Loading...`);
+    let url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURI(input)}&appid=061285ff505e47615f2ae601de75fce1&units=metric`;
     let result = await fetch(url);
     let json = await result.json();
+    
     console.log(json);
+
+    if(json.cod === 200){
+        showInfo({
+            name: json.name,
+            country: json.sys.country,
+            temp: json.main.temp,
+            tempIcon: json.weather[0].icon,
+            windSpeed: json.wind.speed,
+            windAngle: json.wind.deg
+        });
+    } else {
+        showWarning(`Not found`);
+    }
 
 }
 
 })
+
+function showInfo(json){
+    showWarning(``);
+    document.querySelector(`.resultado`).style.display = `block`;
+    document.querySelector(`.titulo`).innerHTML = `${json.name}, ${json.country}`
+    document.querySelector(`.tempInfo`).innerHTML = `${json.temp}<sup>ºC</sup>`
+}
 
 function showWarning(msg){
     document.querySelector(`.aviso`).innerHTML = msg;
